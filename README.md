@@ -12,14 +12,14 @@ Zisserman.
 
 Firstly, clone this repository using
 
-`$ git clone https://github.com/deepmind/kinetics-i3d`
+`$ git clone https://github.com/dythebs/i3d_reproducing.git`
 
 Then, download Dataset and List using
 
 ```
 $ curl -O http://crcv.ucf.edu/data/UCF101/UCF101.rar
 $ curl -O http://crcv.ucf.edu/data/UCF101/UCF101TrainTestSplits-RecognitionTask.zip
-````
+```
 
 ### Data Preprocessing
 
@@ -47,4 +47,13 @@ Mov uncompressed files to `/data`
 ├── inception_v1_3d.py
 ├── inception_v1_3d_train.py
 └── input_data.py
+
+
+
 ```
+
+## Reference
+
+[kinetics-i3d](https://github.com/deepmind/kinetics-i3d)
+
+Thank Joao Carreira for offering me help.
