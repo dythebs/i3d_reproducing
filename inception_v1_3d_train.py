@@ -17,8 +17,12 @@ with tf.variable_scope('rgb'):
 	rgb_input = tf.placeholder(dtype=tf.uint8, shape=[None, 64, 224, 224, 3])
 	rgb_input_process = tf.cast(rgb_input, tf.float32) / 128. -1
 	rgb_logits = inception_v1_3d.inception_v1_3d(rgb_input_process, keep_prob, 101)
+with tf.variable_scope('flow'):
+	flow_input = tf.placeholder(dtype=tf.float32, shape=[None, 64, 224, 224, 2])
+	flow_input_process = flow_input / 20.
+	flow_logits = inception_v1_3d.inception_v1_3d(flow_input_process, keep_prob, 101)
 
-logits = rgb_logits
+logits = rgb_logits + flow_logits
 
 y = tf.nn.softmax(logits)
 y_ = tf.placeholder(dtype=tf.float32,shape=[None, 101])
@@ -36,12 +40,14 @@ one_element = input_data.read_data(sess)
 for i in range(3000):
 	element = sess.run(one_element)
 	rgb_datas = element[0]
-	labels = input_data.one_hot([b.decode() for b in element[1].tolist()])
-	sess.run(train_step, feed_dict={rgb_input:rgb_datas, y_:labels, keep_prob:0.6})
+	flow_datas = element[1]
+	labels = input_data.one_hot([b.decode() for b in element[-1].tolist()])
+	sess.run(train_step, feed_dict={rgb_input:rgb_datas, flow_input:flow_datas, y_:labels, keep_prob:0.6})
 	if i % 50 == 0:
 		element = sess.run(one_element)
 		rgb_datas = element[0]
-		labels = input_data.one_hot([b.decode() for b in element[1].tolist()])
+		flow_datas = element[1]
+		labels = input_data.one_hot([b.decode() for b in element[-1].tolist()])
 		train_accuracy, loss = sess.run([accuracy, cross_entropy] ,
-			feed_dict={rgb_input:rgb_datas, y_:labels, keep_prob:1})
+			feed_dict={rgb_input:rgb_datas, flow_input:flow_datas, y_:labels, keep_prob:1})
 		print("step %d, train accuracy %g, loss %g" % (i, train_accuracy, loss))
